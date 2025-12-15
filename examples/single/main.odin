@@ -31,6 +31,16 @@ _cleanup :: proc "contextless" () {
 main :: proc() {
 	example_util.debug_tracking_allocator_init()
 
+	cc.title("GV Video (cc demo)")
+	cc.on_init(setup)
+	cc.background(colors.gray)
+	cc.size(win_width, win_height)
+	// cc.on_key_pressed(on_keydown)
+
+	cc.run(frame)
+}
+
+setup :: proc() {
 	// gv_path = "gv/test_asset/test-10px.gv"
 	gv_path = "gv/gv_asset_for_test/alpha-countdown-blue.gv"
 
@@ -58,12 +68,6 @@ main :: proc() {
 	async = true
 	start_time = time.now()
 
-	cc.title("GV Video (cc demo)")
-	cc.background(colors.gray)
-	cc.size(win_width, win_height)
-	// cc.on_key_pressed(on_keydown)
-
-	cc.run(frame)
 }
 
 // on_keydown :: proc(keycode: cc.KeyCode, modifier: cc.Modifiers) {
