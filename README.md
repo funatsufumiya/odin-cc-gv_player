@@ -1,5 +1,7 @@
 # GV video player for [odin-cc](https://github.com/cc4v/odin-cc)
 
+Using [odin-gv](https://github.com/funatsufumiya/odin-gv)
+
 ![docs/screenshot.png](./docs/screenshot.png)
 
 ## Examples
@@ -13,3 +15,7 @@ $ odin run examples/single -- your_file.gv
 $ odin run examples/multiple -- file1.gv file2.gv file3.gv ...
 $ odin run examples/multiple -- your_dir_containing_gv_files
 ```
+
+## Note
+
+This repository has recursive git submoduels. So you need `git clone --recursive`.
