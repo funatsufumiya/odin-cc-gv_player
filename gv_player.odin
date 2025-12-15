@@ -3,6 +3,7 @@ package gv_player
 import "core:time"
 import "core:log"
 import "core:os"
+import "core:fmt"
 import "shared:cc"
 import "shared:cc/colors"
 import gv "./gv"

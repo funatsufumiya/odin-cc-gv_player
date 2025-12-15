@@ -39,7 +39,8 @@ main :: proc() {
 	} else {
 		fmt.println("[INFO] Playing the default GV video. You can specify a .gv file as an argument.")
 	}
-	player, err := gv_player.new_gvplayer_with_option(gv_path, false, true)
+	err : gv_player.PlayerCreationError
+	player, err = gv_player.new_gvplayer_with_option(gv_path, false, true)
 	if err != nil {
 		// log.error("Failed to load GV:", err)
 		fmt.eprintln("Failed to load GV:", err)
@@ -53,7 +54,7 @@ main :: proc() {
 	gv_player.set_loop(&player, true)
 	gv_player.play(&player)
 
-	player = player
+	// player = player
 	async = true
 	start_time = time.now()
 
@@ -105,7 +106,10 @@ frame :: proc() {
 	ty := (win_height - h) / 2
 	// println("x x y: ${tx} x ${ty}")
 
+	cc.set_color(colors.white)
 	gv_player.draw(&player, tx, ty, w, h)
+
+	cc.set_color(colors.black)
 
 	// app.gg.draw_text_def(10, 10, 'Async: $app.async (A key to toggle)')
 	sa := fmt.tprint("Async:", gv_player.is_async(&player))
