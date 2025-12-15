@@ -45,6 +45,11 @@ main :: proc() {
 		fmt.eprintln("Failed to load GV:", err)
 		os.exit(1)
 	}
+
+	fmt.println("video header:", player.video.header)
+	fmt.println("video width:", gv_player.width(&player))
+	fmt.println("video height:", gv_player.height(&player))
+
 	gv_player.set_loop(&player, true)
 	gv_player.play(&player)
 
