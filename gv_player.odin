@@ -17,6 +17,10 @@ PlayerCreationError :: union {
     runtime.Allocator_Error
 }
 
+PlayerUpdateError :: union {
+    gv.ReadFrameDxtOsError
+}
+
 PlayerState :: enum {
     STOPPED,
     PLAYING,
@@ -43,6 +47,15 @@ GVPlayer :: struct {
     immutable_sampler:  ^sg.Sampler,
     image_compressed_allocated:  bool,
     image_compressed:  cc.Image,
+}
+
+delete_player :: proc(p: ^GVPlayer) {
+    // TODO: Implement
+    log.error("delete_player not implemented")
+
+    if p != nil {
+        // ...
+    }
 }
 
 new_gvplayer :: proc(path: string, allocator := context.allocator) -> (GVPlayer, PlayerCreationError) {
@@ -223,9 +236,9 @@ new_immutable_image :: proc(p: ^GVPlayer, w: int, h: int, channels: int, buf: []
     return img
 }
 
-update :: proc(p: ^GVPlayer, allocator := context.allocator) -> bool {
+update :: proc(p: ^GVPlayer, allocator := context.allocator) -> PlayerUpdateError {
     if p.state != .PLAYING {
-        return true
+        return nil
     }
     elapsed_sec := f32(f64(time.duration_nanoseconds(time.diff(p.start_time, time.now()))) / 1000_000_000.0 + p.seek_time)
     fps := p.video.header.fps
@@ -239,7 +252,7 @@ update :: proc(p: ^GVPlayer, allocator := context.allocator) -> bool {
             p.last_frame_id = 0
         } else {
             p.state = .STOPPED
-            return false
+            return nil
         }
     }
 
@@ -268,22 +281,20 @@ update :: proc(p: ^GVPlayer, allocator := context.allocator) -> bool {
             err := gv.read_frame_compressed_to(p.video, frame_id, p.frame_buf)
             if err != nil {
                 log.warn("gv.read_frame_compressed error: ", err)
-                // return err
-                return true
+                return err
             }
         }else {
             err := gv.read_frame_to(p.video, frame_id, p.frame_buf)
             if err != nil {
                 log.warn("gv.read_frame_compressed error: ", err)
-                // return err
-                return true
+                return err
             }
         }
         p.last_frame_id = frame_id
         p.last_frame_time = f64(frame_id) / f64(fps) * 1000.0
     }
 
-    return false
+    return nil
 }
 
 current_frame :: proc(p: ^GVPlayer) -> u32 {
