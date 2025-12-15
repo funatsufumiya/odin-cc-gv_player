@@ -213,19 +213,26 @@ new_immutable_image :: proc(p: ^GVPlayer, w: int, h: int, channels: int, buf: []
         width =        i32(w),
         height =       i32(h),
         pixel_format = pixel_format,
-        num_slices =   1,
-        num_mipmaps =  1,
+        // num_slices =   1,
+        // num_mipmaps =  1,
+        num_mipmaps =  0,
         usage =        immutable_image_usage,
         label =        nil,
         data =         data,
+        d3d11_texture = nil,
     }
 
     if p.immutable_sampler == nil {
         smp_desc := sg.Sampler_Desc{
-            wrap_u =     .REPEAT, // SAMPLER
-            wrap_v =     .REPEAT,
-            min_filter = .LINEAR, //.MIN_FILTER,
-            mag_filter = .LINEAR, //.MAG_FILTER,
+            // wrap_u =     .REPEAT, // SAMPLER
+            // wrap_v =     .REPEAT,
+            // min_filter = .LINEAR, //.MIN_FILTER,
+            // mag_filter = .LINEAR, //.MAG_FILTER,
+
+            min_filter = .LINEAR,
+            mag_filter = .LINEAR,
+            wrap_u =     .CLAMP_TO_EDGE,
+            wrap_v =     .CLAMP_TO_EDGE
         }
         
         sampler := sg.make_sampler(smp_desc)
@@ -242,6 +249,8 @@ new_immutable_image :: proc(p: ^GVPlayer, w: int, h: int, channels: int, buf: []
         simg_ok = true,
         ok = true,
     }
+
+    img.sview = sg.make_view({ texture = { image = img.simg } })
 
     // ctx.cache_image(img) // FIXME: this should be considered
 
@@ -381,6 +390,8 @@ draw :: proc(p: ^GVPlayer, x: f32, y: f32, w: f32, h: f32) {
             get_pixel_format(p),
         )
         p.image_compressed_allocated = true
+
+        // fmt.println(p.image_compressed)
 
         // ctx.draw_image(x, y, w, h, p.image_compressed)
         cc.image_with_size(&p.image_compressed, x, y, w, h)
