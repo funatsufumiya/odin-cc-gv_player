@@ -2,7 +2,14 @@
 
 Using [odin-gv](https://github.com/funatsufumiya/odin-gv). Forked from [v_gvvideo](https://github.com/funatsufumiya/v_gvvideo) (player part).
 
+Compressed texture GPU streaming is supported (DXT1/DXT3/DXT5). You can also use alpha channel (opacity).
+
 ![docs/screenshot.png](./docs/screenshot.png)
+
+## Pre-requisites
+
+- Please install [odin-cc](https://github.com/cc4v/odin-cc) first.
+- Make sure git submodules are installed (make sure directories not empty)
 
 ## Examples
 
