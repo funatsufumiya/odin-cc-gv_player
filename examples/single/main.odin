@@ -105,8 +105,12 @@ frame :: proc() {
 	// app.gg.draw_text_def(10, 10, 'Async: $app.async (A key to toggle)')
 	sa := fmt.tprint("Async:", gv_player.is_async(&player))
 	cc.text(sa, 10, 10) 
+
+	sc := fmt.tprint("State:", player.state)
+	cc.text(sc, 10, 30) 
+
 	video_time := gv_player.current_time(&player)
 	elapsed := f32(f64(time.duration_nanoseconds(time.diff(start_time, time.now()))) / f64(1000_000_000.0))
 	sb := fmt.tprintf("VideoTime: %0.2f sec, Elapsed: %0.2f sec", video_time, elapsed)
-	cc.text(sb, 10, 30)
+	cc.text(sb, 10, 60)
 }
