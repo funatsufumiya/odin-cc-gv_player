@@ -49,7 +49,7 @@ main :: proc() {
 	async = true
 	start_time = time.now()
 
-	cc.title("GV Video (V+gg Demo)")
+	cc.title("GV Video (cc demo)")
 	cc.background(colors.gray)
 	cc.size(win_width, win_height)
 	// cc.on_key_pressed(on_keydown)
