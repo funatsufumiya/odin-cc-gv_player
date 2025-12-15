@@ -38,7 +38,8 @@ main :: proc() {
 	}
 	player, err := gv_player.new_gvplayer_with_option(gv_path, false, true)
 	if err != nil {
-		log.error("Failed to load GV:", err)
+		// log.error("Failed to load GV:", err)
+		fmt.eprintln("Failed to load GV:", err)
 		os.exit(1)
 	}
 	gv_player.set_loop(&player, true)
