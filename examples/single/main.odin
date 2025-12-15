@@ -106,7 +106,7 @@ frame :: proc() {
 	sa := fmt.tprint("Async:", gv_player.is_async(&player))
 	cc.text(sa, 10, 10) 
 	video_time := gv_player.current_time(&player)
-	elapsed := f32(time.duration_nanoseconds(time.diff(start_time, time.now())) / 1000_000_000.0)
+	elapsed := f32(f64(time.duration_nanoseconds(time.diff(start_time, time.now()))) / f64(1000_000_000.0))
 	sb := fmt.tprintf("VideoTime: %0.2f sec, Elapsed: %0.2f sec", video_time, elapsed)
 	cc.text(sb, 10, 30)
 }
