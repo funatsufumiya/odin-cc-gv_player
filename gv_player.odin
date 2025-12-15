@@ -278,6 +278,10 @@ update :: proc(p: ^GVPlayer, allocator := context.allocator) -> PlayerUpdateErro
                 delete(p.frame_buf)
                 p.frame_buf = make([]u8, int(p.video.header.frame_bytes), allocator)
             }
+            if p.frame_buf == nil || len(p.frame_buf) == 0 {
+                p.frame_buf = make([]u8, int(p.video.header.frame_bytes), allocator)
+            }
+
             err := gv.read_frame_compressed_to(p.video, frame_id, p.frame_buf)
             if err != nil {
                 log.warn("gv.read_frame_compressed error: ", err)

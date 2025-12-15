@@ -63,10 +63,10 @@ main :: proc() {
 // 	}
 // }
 
-// fn (mut app App) toggle_async() {
-// 	app.async = !app.async
-// 	app.player.set_async(app.async)
-// 	app.start_time = time.now()
+// toggle_async :: proc() {
+// 	async = !async
+// 	// gv_player.set_async(player, async)
+// 	start_time = time.now()
 // }
 
 frame :: proc() {
