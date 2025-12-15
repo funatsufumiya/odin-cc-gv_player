@@ -1,5 +1,7 @@
 # GV video player for [odin-cc](https://github.com/cc4v/odin-cc)
 
+![docs/screenshot.png](./docs/screenshot.png)
+
 ## Examples
 
 ```bash
