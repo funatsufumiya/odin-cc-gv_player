@@ -371,7 +371,9 @@ draw :: proc(p: ^GVPlayer, x: f32, y: f32, w: f32, h: f32) {
         // ctx.remove_cached_image_by_idx(p.image_compressed.id)
 
     }else{
-        assert(false, "Currently only compressed texture is supported")
+        // assert(false, "Currently only compressed texture is supported")
+        log.error("Currently only compressed texture is supported")
+
         // if p.frame_image == 0 {
         //     p.frame_image = ctx.new_streaming_image(int(p.video.header.width), int(p.video.header.height), 4, gg.StreamingImageConfig{
         //         pixel_format = .RGBA8
