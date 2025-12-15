@@ -65,7 +65,7 @@ setup :: proc() {
 	gv_player.play(&player)
 
 	// player = player
-	async = true
+	async = false
 	start_time = time.now()
 
 }
