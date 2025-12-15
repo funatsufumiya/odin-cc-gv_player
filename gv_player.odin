@@ -42,14 +42,15 @@ GVPlayer :: struct {
     mutex            : sync.Mutex,
     immutable_sampler:  ^sg.Sampler,
     image_compressed_allocated:  bool,
-    image_compressed:  sg.Image,
+    image_compressed:  cc.Image,
 }
 
-new_gvplayer :: proc(path: string, allocator := context.allocator) -> (GVPlayer, bool) {
+new_gvplayer :: proc(path: string, allocator := context.allocator) -> (GVPlayer, PlayerCreationError) {
     player, err := new_gvplayer_with_option(path, false, true,  allocator)
-    if err != false {
+    if err != nil {
         return {}, err
     }
+    return player, nil
 }
 
 new_gvplayer_with_option :: proc(path: string, async: bool, use_compressed: bool, allocator := context.allocator) -> (GVPlayer, PlayerCreationError) {
@@ -167,13 +168,29 @@ new_immutable_image :: proc(p: ^GVPlayer, w: int, h: int, channels: int, buf: []
         ptr =  raw_data(buf),
         size = buf_len
     }
+
+    // doc
+    // Image_Usage :: struct {
+    //     storage_image : bool,
+    //     color_attachment : bool,
+    //     resolve_attachment : bool,
+    //     depth_stencil_attachment : bool,
+    //     immutable : bool,
+    //     dynamic_update : bool,
+    //     stream_update : bool,
+    // }
+
+    immutable_image_usage := sg.Image_Usage {
+        immutable = true
+    }
+
     img_desc := sg.Image_Desc{
         width =        i32(w),
         height =       i32(h),
         pixel_format = pixel_format,
         num_slices =   1,
         num_mipmaps =  1,
-        usage =        .immutable,
+        usage =        immutable_image_usage,
         label =        nil,
         data =         data,
     }
@@ -250,19 +267,23 @@ update :: proc(p: ^GVPlayer, allocator := context.allocator) -> bool {
             }
             err := gv.read_frame_compressed_to(p.video, frame_id, p.frame_buf)
             if err != nil {
-                log.warn("gv.read_frame_compressed error (ignoring): ", err)
-                return
+                log.warn("gv.read_frame_compressed error: ", err)
+                // return err
+                return true
             }
         }else {
             err := gv.read_frame_to(p.video, frame_id, p.frame_buf)
             if err != nil {
-                log.warn("gv.read_frame_compressed error (ignoring): ", err)
-                return
+                log.warn("gv.read_frame_compressed error: ", err)
+                // return err
+                return true
             }
         }
         p.last_frame_id = frame_id
         p.last_frame_time = f64(frame_id) / f64(fps) * 1000.0
     }
+
+    return false
 }
 
 current_frame :: proc(p: ^GVPlayer) -> u32 {
@@ -316,52 +337,40 @@ get_pixel_format :: proc(p: ^GVPlayer) -> sg.Pixel_Format {
     return .BC3_RGBA
 }
 
-draw :: proc(p: ^GVPlayer, x: int, y: int, w: int, h: int) {
+draw :: proc(p: ^GVPlayer, x: f32, y: f32, w: f32, h: f32) {
     sync.lock(&p.mutex)
 
     if p.use_compressed {
         if p.image_compressed_allocated {
-            sg.destroy_image(p.image_compressed.simg)
-            sg.destroy_image(p.image_compressed)
+            // sg.destroy_image(p.image_compressed.simg)
+            cc.delete_image(&p.image_compressed)
         }
 
-        // gfx_image, sampler := p.new_immutable_image(
-        p.image_compressed = p.new_immutable_image(
+        p.image_compressed = new_immutable_image(
+            p,
             int(p.video.header.width), int(p.video.header.height), 4,
-            p.frame_buf.data,
-            uint(p.frame_buf.len),
-            gg.StreamingImageConfig{
-                pixel_format = p.get_pixel_format(),
-                // pixel_format: .rgba8
-            }
+            p.frame_buf,
+            uint(len(p.frame_buf)),
+            get_pixel_format(p),
         )
         p.image_compressed_allocated = true
-        // p.frame_image = image.id
 
-        ctx.draw_image(x, y, w, h, p.image_compressed)
+        // ctx.draw_image(x, y, w, h, p.image_compressed)
+        cc.image_with_size(&p.image_compressed, x, y, w, h)
+        // ctx.remove_cached_image_by_idx(p.image_compressed.id)
 
-        // draw_gfx_image(x, y, w, h, gfx_image, sampler)
-
-        // println("image.id: ${image.id}")
-
-        ctx.remove_cached_image_by_idx(p.image_compressed.id)
-
-        // gfx.destroy_image(p.image_compressed.simg)
-        // gfx.destroy_image(gfx_image)
-        // gfx.destroy_sampler(sampler)
     }else{
-        if p.frame_image == 0 {
-            p.frame_image = ctx.new_streaming_image(int(p.video.header.width), int(p.video.header.height), 4, gg.StreamingImageConfig{
-                // pixel_format: p.get_pixel_format()
-                pixel_format = .RGBA8
-            })
-            // println("pixel_format: ${p.get_pixel_format()}")
-            ctx.update_pixel_data(p.frame_image, p.frame_buf.data)
-        } else {
-            ctx.update_pixel_data(p.frame_image, p.frame_buf.data)
-        }
+        assert(false, "Currently only compressed texture is supported")
+        // if p.frame_image == 0 {
+        //     p.frame_image = ctx.new_streaming_image(int(p.video.header.width), int(p.video.header.height), 4, gg.StreamingImageConfig{
+        //         pixel_format = .RGBA8
+        //     })
+        //     ctx.update_pixel_data(p.frame_image, p.frame_buf.data)
+        // } else {
+        //     ctx.update_pixel_data(p.frame_image, p.frame_buf.data)
+        // }
 
-        ctx.draw_image_by_id(x, y, w, h, p.frame_image)
+        // ctx.draw_image_by_id(x, y, w, h, p.frame_image)
     }
 
     // println("p.frame_image: ${p.frame_image}")
