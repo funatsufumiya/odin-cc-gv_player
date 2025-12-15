@@ -86,7 +86,9 @@ setup :: proc () {
 		} else {
 			// gv_paths = os.args[1:]
 			for arg in os.args[1:] {
-				append(&gv_paths, arg)
+				if os.is_file(arg) {
+					append(&gv_paths, arg)
+				}
 			}
 		}
 	} else {
