@@ -2,8 +2,11 @@ package main
 
 import "core:time"
 import "core:os"
+import "core:os/os2"
 import "core:fmt"
 import "core:log"
+import "core:path/filepath"
+import "core:strings"
 import gv_player "../.."
 import "shared:cc"
 import "shared:cc/colors"
@@ -54,30 +57,47 @@ main :: proc() {
 }
 
 setup :: proc () {
-	// gv_paths := {}
+	gv_paths = make([dynamic]string)
 
-	// if os.args.len > 1 {
-	// 	first := os.args[1]
-	// 	if os.is_dir(first) {
-	// 		entries := os.ls(first) or_else {}
-	// 		for entry in entries {
-	// 			if !os.is_dir(os.join_path(first, entry)) && entry.to_lower().ends_with('.gv') {
-	// 				gv_paths << os.join_path(first, entry)
-	// 			}
-	// 		}
-	// 	} else {
-	// 		gv_paths = os.args[1..]
-	// 	}
-	// } else {
+	if len(os.args) > 1 {
+		first := os.args[1]
+		if os.is_dir(first) {
+			max_files :: 40
+			entries, err := os2.read_directory_by_path(first, max_files, context.allocator)
+			defer delete(entries)
+			if err != nil {
+				entries = {}
+			}
 
-		gv_paths = make([dynamic]string)
+			fmt.println("len entries:", len(entries))
+
+			for entry in entries {
+				entry_path := entry.fullpath
+				// joined := filepath.join({first, entry_path})
+
+				// if !os.is_dir(joined) && entry_path.to_lower().ends_with(".gv") {
+				if !os.is_dir(entry_path) \
+					&& ( strings.ends_with(entry_path, ".gv") || \
+						strings.ends_with(entry_path, ".GV") )
+				{
+					append(&gv_paths, entry_path)
+				}
+			}
+		} else {
+			// gv_paths = os.args[1:]
+			for arg in os.args[1:] {
+				append(&gv_paths, arg)
+			}
+		}
+	} else {
+
 		for i in 0..<4 {
 			append(&gv_paths, "gv/gv_asset_for_test/alpha-countdown-blue.gv")
 		}
-		fmt.println("[INFO] Playing default GV videos")
-		// fmt.println("[INFO] Playing default GV videos. You can specify multiple .gv files as arguments or a directory.")
+		// fmt.println("[INFO] Playing default GV videos")
+		fmt.println("[INFO] Playing default GV videos. You can specify multiple .gv files as arguments or a directory.")
 
-	// }
+	}
 
 	players = make([dynamic]^gv_player.GVPlayer)
 	errs = make([dynamic]string)
