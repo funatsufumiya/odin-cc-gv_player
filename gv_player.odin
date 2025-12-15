@@ -42,7 +42,7 @@ GVPlayer :: struct {
     frame_ch         : chan.Chan([]u8),
     stop_ch          : chan.Chan(bool),
     last_frame_id    : u32,
-    last_frame_time  :  f64,
+    last_frame_time  : f64,
     mutex            : sync.Mutex,
     immutable_sampler:  ^sg.Sampler,
     image_compressed_allocated:  bool,
@@ -50,11 +50,22 @@ GVPlayer :: struct {
 }
 
 delete_player :: proc(p: ^GVPlayer) {
-    // TODO: Implement
-    log.error("delete_player not implemented")
+    // // TODO: Implement
+    // log.error("delete_player not fully implemented")
 
     if p != nil {
-        // ...
+        chan.destroy(p.frame_ch)
+        chan.destroy(p.stop_ch)
+        gv.delete_gvvideo(&p.video)
+        if p.frame_image != 0 {
+            img := sg.Image{id = u32(p.frame_image)}
+            sg.destroy_image(img)
+        }
+        if p.immutable_sampler != nil {
+            sg.destroy_sampler(p.immutable_sampler^)
+        }
+        cc.delete_image(&p.image_compressed)
+        delete(p.frame_buf)
     }
 }
 
