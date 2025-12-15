@@ -71,8 +71,9 @@ setup :: proc () {
 	// } else {
 
 		gv_paths = make([dynamic]string)
-		append(&gv_paths, "gv/gv_asset_for_test/alpha-countdown-blue.gv")
-		append(&gv_paths, "gv/gv_asset_for_test/alpha-countdown-blue.gv")
+		for i in 0..<4 {
+			append(&gv_paths, "gv/gv_asset_for_test/alpha-countdown-blue.gv")
+		}
 		fmt.println("[INFO] Playing default GV videos")
 		// fmt.println("[INFO] Playing default GV videos. You can specify multiple .gv files as arguments or a directory.")
 
@@ -144,7 +145,7 @@ frame :: proc() {
 		video_time := gv_player.current_time(player)
 		elapsed := f32(f64(time.duration_nanoseconds(time.diff(start_times[i], time.now()))) / f64(1000_000_000.0))
 		sb := fmt.tprintf("VideoTime: %0.2f sec, Elapsed: %0.2f sec", video_time, elapsed)
-		cc.text(sb, f32(col * w), f32(row * h + 30))
+		cc.text(sb, f32(col * w), f32(row * h + 30) + f32(col * 20))
 	}
 
 	sa := fmt.tprint("Async:", gv_player.is_async(players[0]))
