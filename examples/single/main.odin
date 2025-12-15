@@ -8,6 +8,7 @@ import gv_player "../.."
 import "shared:cc"
 import "shared:cc/colors"
 import "base:runtime"
+import example_util "../example_util"
 
 win_width :: 800
 win_height :: 600
@@ -28,6 +29,8 @@ _cleanup :: proc "contextless" () {
 }
 
 main :: proc() {
+	example_util.debug_tracking_allocator_init()
+
 	// gv_path = "gv/test_asset/test-10px.gv"
 	gv_path = "gv/gv_asset_for_test/alpha-countdown-blue.gv"
 
