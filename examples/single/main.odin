@@ -81,6 +81,9 @@ frame :: proc() {
 
 	err1 := gv_player.update(&player)
 	if err1 != nil {
+		if err != "" {
+			delete(err)
+		}
 		err = fmt.aprint(err1)
 		return
 	}
