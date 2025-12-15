@@ -251,7 +251,7 @@ update :: proc(p: ^GVPlayer, allocator := context.allocator) -> PlayerUpdateErro
     if p.state != .PLAYING {
         return nil
     }
-    elapsed_sec := f32(f64(time.duration_nanoseconds(time.diff(p.start_time, time.now()))) / 1000_000_000.0 + p.seek_time)
+    elapsed_sec := f32(f64(time.duration_nanoseconds(time.diff(p.start_time, time.now()))) / f64(1000_000_000.0) + p.seek_time)
     fps := p.video.header.fps
     frame_id := u32(elapsed_sec * fps)
 
@@ -414,7 +414,7 @@ async_update_loop :: proc(p: ^GVPlayer) {
             p.is_async_running = false
             return
         }
-        elapsed_sec := f32(f64(time.duration_nanoseconds(time.diff(p.start_time, time.now()))) / 1000_000_000.0 + p.seek_time)
+        elapsed_sec := f32(f64(time.duration_nanoseconds(time.diff(p.start_time, time.now()))) / f64(1000_000_000.0) + p.seek_time)
         fps := p.video.header.fps
         frame_id := u32(elapsed_sec * fps)
         if frame_id >= p.video.header.frame_count {
