@@ -59,7 +59,7 @@ delete_player :: proc(p: ^GVPlayer) {
 }
 
 new_gvplayer :: proc(path: string, allocator := context.allocator) -> (GVPlayer, PlayerCreationError) {
-    player, err := new_gvplayer_with_option(path, false, true,  allocator)
+    player, err := new_gvplayer_with_option(path, false, true, allocator)
     if err != nil {
         return {}, err
     }
