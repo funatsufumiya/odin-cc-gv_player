@@ -61,10 +61,10 @@ delete_player :: proc(p: ^GVPlayer) {
             img := sg.Image{id = u32(p.frame_image)}
             sg.destroy_image(img)
         }
+        cc.delete_image(&p.image_compressed)
         if p.immutable_sampler != nil {
             sg.destroy_sampler(p.immutable_sampler^)
         }
-        cc.delete_image(&p.image_compressed)
         delete(p.frame_buf)
     }
 }
